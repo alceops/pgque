@@ -39,7 +39,13 @@ select pgque.version();
  [[your version]]
 ```
 
-The install creates the `pgque` schema, three roles (`pgque_reader`, `pgque_writer`, `pgque_admin`), and every function you will call in the rest of this tutorial. See the [reference](reference.md) for the full surface.
+The install creates the `pgque` schema, three roles, and every function you will call in the rest of this tutorial. The roles are **siblings**, not parent/child — granting `pgque_writer` does **not** grant `pgque_reader`:
+
+- `pgque_reader` — consume events (`receive`, `ack`, `nack`, `subscribe`, `unsubscribe`, plus the underlying PgQ batch primitives).
+- `pgque_writer` — produce events (`send`, `send_batch`, `insert_event`).
+- `pgque_admin` — operator role; member of both reader and writer.
+
+Apps that produce **and** consume need both roles granted explicitly. The tutorial below runs as superuser, so role grants are not exercised; see the [reference](reference.md#roles-and-grants) for the full role table and rationale.
 
 ## Step 2: Create the queue and the consumer
 
